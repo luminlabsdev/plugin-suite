@@ -1,0 +1,10 @@
+[package]
+name = "lumin/luminpluginsuite"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
+promise = "evaera/promise@4.0.0"
+signal = "sleitnick/signal@2.0.1"
+aegis = "lumin/aegis@0.2.2"
