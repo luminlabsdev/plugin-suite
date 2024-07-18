@@ -1,0 +1,20 @@
+{
+  "name": "LuminPluginSuite-dev",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "LuminPluginSuite": {
+        "$path": "src",
+        "Packages": {
+          "$path": "Packages"
+        }
+      },
+      "Script": {
+        "$className": "Script",
+        "$properties": {
+          "Source": "print(\"Hello world!\")\n\n\nrbxassetid://12568325150"
+        }
+      }
+    }
+  }
+}

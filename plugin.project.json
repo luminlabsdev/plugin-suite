@@ -1,0 +1,9 @@
+{
+    "name": "LuminPluginSuite",
+    "tree": {
+        "$path": "src",
+        "Packages": {
+            "$path": "Packages"
+        }
+    }
+}
