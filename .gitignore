@@ -4,3 +4,4 @@ node_modules
 Packages
 sourcemap.json
 wally.lock
+wally-install.js
