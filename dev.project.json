@@ -1,15 +1,17 @@
 {
-	"legacyScripts": false,
-	"name": "luminpluginsuite-dev",
-	"tree": {
-		"$className": "DataModel",
-		"ReplicatedStorage": {
-            "Plugin": {
-                "$path": "src",
-                "Packages": {
-                    "$path": "Packages"
-                }
-            }
-		}
-	}
+  "name": "luminpluginsuite-dev",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Plugin": {
+        "PluginRunner": {
+          "$path": "src",
+          "Packages": {
+            "$path": "Packages"
+          }
+        }
+      }
+    }
+  },
+  "legacyScripts": true
 }
