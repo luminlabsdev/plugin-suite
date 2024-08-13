@@ -13,6 +13,8 @@ local PluginComponents = AegisComponentsStudio.PluginComponents
 
 local New = Aegis.new
 local State = Aegis.state
+local Spring = Aegis.spring
+local Update = Aegis.Update
 local Events = Aegis.Key("Events") :: Aegis.Key
 
 local Components = script.Components
@@ -20,8 +22,30 @@ local Components = script.Components
 local CaptureSpace = require(Components.CaptureSpace)
 local CaptureBorders = require(Components.CaptureBorders)
 
+local CurrentCamera = workspace.CurrentCamera
+
+local FOVState = State(70)
+local FOVSpring = Spring({
+	State = FOVState,
+	Frequency = 2.5,
+})
+
 local CATEGORY = "Building"
 local Active = State(false)
+
+Update(workspace.CurrentCamera, {
+	FieldOfView = FOVSpring
+})
+
+local function UpdateCamera()
+	CurrentCamera.AncestryChanged:Once(function()
+		Update(workspace.CurrentCamera, {
+			FieldOfView = FOVSpring
+		})
+		CurrentCamera = workspace.CurrentCamera
+		UpdateCamera()
+	end)
+end
 
 local function Init()
 	New(PluginComponents.ToolbarButton, {
@@ -29,12 +53,17 @@ local function Init()
 		Active = Active,
 
 		OnClick = function()
+			if Active:Get() then
+				FOVState:Set(70)
+			else
+				FOVState:Set(40)
+			end
 			Active:Set(not Active:Get())
 		end,
 
 		Description = "Thumbnail Capture",
 		ToolTip = "Start capture",
-		Image = "",
+		Image = "rbxassetid://18879737891",
 		Name = "Thumbnail Capture",
 	})
 
@@ -50,6 +79,7 @@ local function Init()
 			HorizontalFlex = Enum.UIFlexAlignment.Fill,
 			FillDirection = Enum.FillDirection.Horizontal,
 			SortOrder = Enum.SortOrder.LayoutOrder,
+			Padding = UDim.new(0, 1)
 		}),
 		CaptureBorder1 = New(CaptureBorders, {
 			LayoutOrder = 1,
@@ -72,6 +102,7 @@ local function Init()
 				[Events] = {
 					Activated = function()
 						CaptureCurrentSnapshot()
+						FOVState:Set(70)
 						Active:Set(false)
 					end,
 				},
@@ -84,6 +115,8 @@ local function Init()
 	})
 end
 
+UpdateCamera()
+
 return {
-	Init = Init,
+	Init = Init
 }

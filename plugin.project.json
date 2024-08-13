@@ -1,0 +1,11 @@
+{
+    "name": "plugin",
+    "tree": {
+        "Plugin": {
+            "$path": "src",
+            "Packages": {
+                "$path": "Packages"
+            }
+        }
+    }
+}
