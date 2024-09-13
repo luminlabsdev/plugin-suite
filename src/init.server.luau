@@ -1,5 +1,10 @@
-local Communicator = require(script.Communicator)
+local Packages = script.Packages
+local Framework = require(Packages.framework)
+local InternalPackages = script.Internal
 local ThumbnailCapture = require(script.Plugins.ThumbnailCapture)
 
-Communicator.Init()
+Framework.Start(Framework.Load({
+    InternalPackages,
+}))
+
 ThumbnailCapture.Init()

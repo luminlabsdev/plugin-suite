@@ -1,16 +1,15 @@
 local Packages = script.Parent.Parent.Parent.Parent.Packages
-local Aegis = require(Packages.aegis)
+local Fusion = require(Packages.fusion)
+local Children = Fusion.Children
 
-local New = Aegis.new
-
+type UsedAs<T> = Fusion.UsedAs<T>
 type CaptureSpace = {
-	Transparency: number?,
-	LayoutOrder: number,
-	[any]: any,
+	Transparency: UsedAs<number>?,
+	LayoutOrder: UsedAs<number>,
 }
 
-return function(props: CaptureSpace)
-	return New("Frame", {
+return function(scope: Fusion.Scope<typeof(Fusion)>, props: CaptureSpace)
+	return scope:New "Frame" {
 		Name = "CaptureSpace",
 		BackgroundColor3 = Color3.fromRGB(0, 0, 0),
 		AnchorPoint = Vector2.new(0.5, 0.5),
@@ -19,12 +18,13 @@ return function(props: CaptureSpace)
 
 		BackgroundTransparency = props.Transparency or 1,
 		LayoutOrder = props.LayoutOrder,
-	}, {
-		New("UIAspectRatioConstraint"),
-		New("UIStroke", {
-			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-			Color = Color3.fromRGB(231, 231, 231),
-			Thickness = 3,
-		}),
-	})
+		[Children] = {
+			scope:New "UIAspectRatioConstraint" {},
+			scope:New "UIStroke" {
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				Color = Color3.fromRGB(231, 231, 231),
+				Thickness = 3,
+			},
+		},
+	}
 end

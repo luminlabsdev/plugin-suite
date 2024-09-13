@@ -1,20 +1,20 @@
 local Packages = script.Parent.Parent.Parent.Parent.Packages
-local Aegis = require(Packages.aegis)
+local Fusion = require(Packages.fusion)
+local Children = Fusion.Children
 
-local New = Aegis.new
-
+type UsedAs<T> = Fusion.UsedAs<T>
 type CaptureBorders = {
-	BackgroundColor: Color3?,
-	LayoutOrder: number,
-	[any]: any,
+	BackgroundColor: UsedAs<Color3>?,
+	LayoutOrder: UsedAs<number>?,
 }
 
-return function(props: CaptureBorders)
-	return New("Frame", {
+return function(scope: Fusion.Scope<typeof(Fusion)>, props: CaptureBorders)
+	return scope:New "Frame" {
 		Name = "Border",
 		Size = UDim2.fromScale(0, 1),
 
 		BackgroundColor3 = props.BackgroundColor or Color3.fromRGB(0, 0, 0),
 		LayoutOrder = props.LayoutOrder,
-	}, props.Children)
+        [Children] = props[Children]
+	}
 end

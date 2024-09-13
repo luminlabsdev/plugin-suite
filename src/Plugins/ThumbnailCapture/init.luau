@@ -1,122 +1,118 @@
-local CoreGui = game:GetService("CoreGui")
+local CoreGui = game:GetService "CoreGui"
 
 local Packages = script.Parent.Parent.Packages
-local InternalPackages = script.Parent.Parent
+local InternalPackages = script.Parent.Parent.Internal
 
+local Framework = require(Packages.framework)
 local Communicator = require(InternalPackages.Communicator)
 
-local CaptureCurrentSnapshot = require(script.CaptureCurrentSnapshot)
-local AegisComponentsStudio = require(Packages.aegiscomponents_studio)
-local Aegis = require(Packages.aegis)
-
-local PluginComponents = AegisComponentsStudio.PluginComponents
-
-local New = Aegis.new
-local State = Aegis.state
-local Spring = Aegis.spring
-local Update = Aegis.Update
-local Events = Aegis.Key("Events") :: Aegis.Key
-
 local Components = script.Components
+local CaptureCurrentSnapshot = require(script.CaptureCurrentSnapshot)
 
-local CaptureSpace = require(Components.CaptureSpace)
-local CaptureBorders = require(Components.CaptureBorders)
+local Fusion = require(Packages.fusion)
+
+local Children = Fusion.Children
+local OnEvent = Fusion.OnEvent
+local peek = Fusion.peek
+
+local scoped = Fusion.scoped
+local scope = scoped(Fusion, {
+	CaptureSpace = require(Components.CaptureSpace),
+	CaptureBorders = require(Components.CaptureBorders),
+})
 
 local CurrentCamera = workspace.CurrentCamera
 
-local FOVState = State(70)
-local FOVSpring = Spring({
-	State = FOVState,
-	Frequency = 2.5,
-})
+local FOVValue = scope:Value(70)
+local FOVSpring = scope:Spring(FOVValue, 12.5)
 
 local CATEGORY = "Building"
-local Active = State(false)
+local NAME = "ThumbnailCapture"
+local Active = scope:Value(false)
 
-Update(workspace.CurrentCamera, {
-	FieldOfView = FOVSpring
-})
+scope:Hydrate(workspace.CurrentCamera) {
+	FieldOfView = FOVSpring,
+}
 
 local function UpdateCamera()
 	CurrentCamera.AncestryChanged:Once(function()
-		Update(workspace.CurrentCamera, {
-			FieldOfView = FOVSpring
-		})
+		scope:Hydrate(workspace.CurrentCamera) {
+			FieldOfView = FOVSpring,
+		}
 		CurrentCamera = workspace.CurrentCamera
 		UpdateCamera()
 	end)
 end
 
 local function Init()
-	New(PluginComponents.ToolbarButton, {
-		Toolbar = Communicator.Toolbars[CATEGORY],
-		Active = Active,
+	local Toolbar = Communicator.Toolbars[CATEGORY]
+	Toolbar:Append("Thumbnail Capture", "Start capture", "rbxassetid://18879737891", function()
+		if peek(Active) then
+			FOVValue:set(70)
+		else
+			FOVValue:set(40)
+		end
+		Active:set(not peek(Active))
+	end)
 
-		OnClick = function()
-			if Active:Get() then
-				FOVState:Set(70)
-			else
-				FOVState:Set(40)
-			end
-			Active:Set(not Active:Get())
-		end,
+    if CoreGui:FindFirstChild(NAME) then
+        CoreGui[NAME]:Destroy()
+    end
 
-		Description = "Thumbnail Capture",
-		ToolTip = "Start capture",
-		Image = "rbxassetid://18879737891",
-		Name = "Thumbnail Capture",
-	})
-
-	New("ScreenGui", {
-		Name = "ThumbnailCapture",
+	scope:New "ScreenGui" {
+		Name = NAME,
 		Archivable = false,
 		IgnoreGuiInset = true,
 		Enabled = Active,
 		Parent = CoreGui,
-	}, {
-		Layout = New("UIListLayout", {
-			VerticalAlignment = Enum.VerticalAlignment.Center,
-			HorizontalFlex = Enum.UIFlexAlignment.Fill,
-			FillDirection = Enum.FillDirection.Horizontal,
-			SortOrder = Enum.SortOrder.LayoutOrder,
-			Padding = UDim.new(0, 1)
-		}),
-		CaptureBorder1 = New(CaptureBorders, {
-			LayoutOrder = 1,
-		}),
-		CaptureSpace = New(CaptureSpace, {
-			LayoutOrder = 2,
-		}),
-		CaptureBorder2 = New(CaptureBorders, {
-			LayoutOrder = 3,
-		}, {
-			CaptureButton = New("TextButton", {
-				Name = "CaptureButton",
-				BackgroundColor3 = Color3.fromRGB(249, 249, 249),
-				Position = UDim2.new(1, -130, 1, -60),
-				Size = UDim2.fromOffset(110, 40),
-				FontFace = Font.fromName("SourceSansPro", Enum.FontWeight.SemiBold),
-				Text = "Capture",
-				TextSize = 20,
+		[Children] = {
+			scope:New "UIListLayout" {
+				VerticalAlignment = Enum.VerticalAlignment.Center,
+				HorizontalFlex = Enum.UIFlexAlignment.Fill,
+				FillDirection = Enum.FillDirection.Horizontal,
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				Padding = UDim.new(0, 1),
+			},
+			CaptureBorder1 = scope:CaptureBorders {
+				LayoutOrder = 1,
+			},
+			CaptureSpace = scope:CaptureSpace {
+				LayoutOrder = 2,
+			},
+			CaptureBorder2 = scope:CaptureBorders {
+				LayoutOrder = 3,
+				[Children] = {
+					CaptureButton = scope:New "TextButton" {
+						Name = "CaptureButton",
+						BackgroundColor3 = Color3.fromRGB(249, 249, 249),
+						Position = UDim2.new(1, -130, 1, -60),
+						Size = UDim2.fromOffset(110, 40),
+						FontFace = Font.fromName("SourceSansPro", Enum.FontWeight.SemiBold),
+						Text = "Capture",
+						TextSize = 20,
+                        AutoButtonColor = true,
 
-				[Events] = {
-					Activated = function()
-						CaptureCurrentSnapshot()
-						FOVState:Set(70)
-						Active:Set(false)
-					end,
+						[OnEvent "Activated"] = function()
+							CaptureCurrentSnapshot()
+							FOVValue:set(70)
+							Active:set(false)
+						end,
+
+						[Children] = {
+							scope:New "UICorner" {
+								CornerRadius = UDim.new(0, 10),
+							},
+						},
+					},
 				},
-			}, {
-				New("UICorner", {
-					CornerRadius = UDim.new(0, 10),
-				}),
-			}),
-		}),
-	})
+			},
+		},
+	}
 end
 
 UpdateCamera()
 
-return {
-	Init = Init
+return Framework.New {
+	Uses = { Communicator :: any },
+	Init = Init,
 }
