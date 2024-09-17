@@ -17,9 +17,9 @@ local function Init()
 	Initiated = true
 end
 
-return Framework.New({
+return Framework.New {
 	Init = Init,
 
 	Initiated = Initiated,
 	Toolbars = Toolbars,
-})
+}

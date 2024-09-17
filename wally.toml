@@ -6,6 +6,6 @@ realm = "shared"
 
 [dependencies]
 signal = "sleitnick/signal@2.0.1"
-framework = "lumin/plugin-framework@0.4.0"
+framework = "lumin/plugin-framework@0.5.0"
 fusion = "elttob/fusion@0.3.0"
-ignite = "cameronpcampbell/ignite@1.0.0"
+ignite = "cameronpcampbell/ignite@1.1.1"

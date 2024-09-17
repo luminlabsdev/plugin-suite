@@ -113,6 +113,6 @@ end
 UpdateCamera()
 
 return Framework.New {
-	Uses = { Communicator :: any },
+	Uses = { Communicator },
 	Init = Init,
 }

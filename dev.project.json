@@ -1,9 +1,10 @@
 {
-  "name": "luminpluginsuite-dev",
+  "name": "pluginsuite",
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
       "Plugin": {
+        "$className": "Folder",
         "PluginRunner": {
           "$path": "src",
           "Packages": {
@@ -12,6 +13,5 @@
         }
       }
     }
-  },
-  "legacyScripts": true
+  }
 }
